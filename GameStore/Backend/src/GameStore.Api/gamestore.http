@@ -1,0 +1,52 @@
+GET http://localhost:5299/games
+
+
+###
+GET http://localhost:5299/games/1ff97920-49f6-43fb-9005-6dccc51272bd
+
+### Post
+POST http://localhost:5299/games
+Content-Type: application/json
+
+{
+    "name": "Minecraft",
+    "genreId": "912EE16C-ED4D-4395-83B7-C2DBFB203BBC",
+    "price": 19.99,
+    "releaseDate": "2011-11-18",
+    "description": "Test Description"
+}
+
+### POST Test
+POST http://localhost:5299/games
+Content-Type: application/json
+
+{
+    "name": "Test Game",
+    "genreId": "912EE16C-ED4D-4395-83B7-C2DBFB203BBC",
+    "price": 19.99,
+    "releaseDate": "2011-11-18",
+    "description": "Test Game Description"
+}
+
+
+
+### PUT
+PUT http://localhost:5299/games/472e842f-38ff-412e-8563-e0311f033c2c
+Content-Type: application/json
+
+{    
+    
+    "name": "Street Fighter III",
+    "genreId": "05082549-D1E2-4698-BAE7-1FAE2B755431",
+    "price": 9.99,
+    "releaseDate": "1992-07-15",
+    "description": "Test Description after PUT"
+}
+
+
+### DELETE 
+DELETE http://localhost:5299/games/1ff97920-49f6-43fb-9005-6dccc51272bd
+
+
+### GET genres
+GET http://localhost:5299/genres
