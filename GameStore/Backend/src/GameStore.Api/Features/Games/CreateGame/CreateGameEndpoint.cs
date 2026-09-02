@@ -1,7 +1,6 @@
 using GameStore.Api.Data;
 using GameStore.Api.Features.Games.Constants;
 using GameStore.Api.Models;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GameStore.Api.Features.Games.CreateGame;
@@ -12,7 +11,9 @@ public static class CreateGameEndpoint
     public static void MapCreateGame(this IEndpointRouteBuilder app)
     {
         app.MapPost("/",
-                ([FromBody] CreateGameDto game, GameStoreContext dbContext) =>
+                async ([FromBody] CreateGameDto game,
+                GameStoreContext dbContext,
+                ILogger<Program> logger) =>
             {
                 var gameEntity = new Game
                 {
@@ -23,9 +24,12 @@ public static class CreateGameEndpoint
                     Description = game.Description
                 };
 
-                dbContext.Games.Add(gameEntity);
+                await dbContext.Games.AddAsync(gameEntity);
 
-                dbContext.SaveChanges();
+                await dbContext.SaveChangesAsync();
+
+                if (logger.IsEnabled(LogLevel.Information))
+                    logger.LogInformation("------->New Game: {GameName} with Price {GamePrice} Created", gameEntity.Name, game.Price);
 
                 return TypedResults.CreatedAtRoute(
                     value: new GameDetailsDto(gameEntity.Id, game.Name, game.GenreId, game.Price, game.ReleaseDate),

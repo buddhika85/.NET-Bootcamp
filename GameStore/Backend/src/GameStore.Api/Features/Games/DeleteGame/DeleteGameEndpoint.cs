@@ -10,11 +10,11 @@ public static class DeleteGameEndpoint
     public static void MapDeleteGame(this IEndpointRouteBuilder app)
     {
         app.MapDelete("/{id:guid}",
-            ([FromRoute] Guid id, GameStoreContext dbContext) =>
+            async ([FromRoute] Guid id, GameStoreContext dbContext) =>
             {
-                dbContext.Games
+                await dbContext.Games
                     .Where(x => x.Id == id)             // Filter which records to deletre
-                    .ExecuteDelete();                   // Batch Delete directly in Physical DB
+                    .ExecuteDeleteAsync();                   // Batch Delete directly in Physical DB
 
                 return TypedResults.NoContent();
             });

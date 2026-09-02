@@ -4,22 +4,24 @@ namespace GameStore.Api.Data;
 
 public static class DataExtensions
 {
-    public static void InitializeDb(this WebApplication app)
+    public static async Task InitializeDbAsync(this WebApplication app)
     {
-        app.MigrateDb();
-        app.SeedDb();
+        await app.MigrateDbAsync();
+        await app.SeedDbAsync();
+
+        app.Logger.LogInformation(18, "-------> DB Ready: Migrations completed and DB seeded");
     }
 
     // Runs migrations when application starts - without doing it using CLI - dotnet ef database update
-    private static void MigrateDb(this WebApplication app)
+    private static async Task MigrateDbAsync(this WebApplication app)
     {
         using var scope = app.Services.CreateScope();
         GameStoreContext dbContext = scope.ServiceProvider.GetRequiredService<GameStoreContext>();
-        dbContext.Database.Migrate();
+        await dbContext.Database.MigrateAsync();
     }
 
     // Seed initial data
-    private static void SeedDb(this WebApplication app)
+    private static async Task SeedDbAsync(this WebApplication app)
     {
         using var scope = app.Services.CreateScope();
         GameStoreContext dbContext = scope.ServiceProvider.GetRequiredService<GameStoreContext>();
@@ -36,7 +38,7 @@ public static class DataExtensions
             ]);
 
             // commit changes to physical DB
-            dbContext.SaveChanges();
+            await dbContext.SaveChangesAsync();
         }
     }
 }
