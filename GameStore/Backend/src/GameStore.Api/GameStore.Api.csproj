@@ -14,4 +14,9 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.11" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Shared\" />
+    <Folder Include="Shared\Timing\" />
+  </ItemGroup>
+
 </Project>

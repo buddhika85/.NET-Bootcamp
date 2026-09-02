@@ -2,18 +2,18 @@ GET http://localhost:5299/games
 
 
 ###
-GET http://localhost:5299/games/1ff97920-49f6-43fb-9005-6dccc51272bd
+GET http://localhost:5299/games/129e1ba7-d2a4-41cc-b1b7-6b7ab182df92
 
 ### Post
 POST http://localhost:5299/games
 Content-Type: application/json
 
 {
-    "name": "Minecraft",
-    "genreId": "912EE16C-ED4D-4395-83B7-C2DBFB203BBC",
-    "price": 19.99,
-    "releaseDate": "2011-11-18",
-    "description": "Test Description"
+    "name": "Forza Horizon 5",
+    "genreId": "5d972040-ab45-43a7-a707-b82b1182502f",
+    "price": 59.99,
+    "releaseDate": "2021-11-05",
+    "description": "Forza Horizon 5 is a 2021 racing game developed by Playground Games and published by Xbox Game Studios. It is the fifth Forza Horizon title, following Forza Horizon 4, and the twelfth main instalment in the Forza series."
 }
 
 ### POST Test
@@ -31,21 +31,20 @@ Content-Type: application/json
 
 
 ### PUT
-PUT http://localhost:5299/games/472e842f-38ff-412e-8563-e0311f033c2c
+PUT http://localhost:5299/games/7e67c8ed-4a24-4759-aa83-be4d2d93834d
 Content-Type: application/json
 
-{    
-    
-    "name": "Street Fighter III",
-    "genreId": "05082549-D1E2-4698-BAE7-1FAE2B755431",
-    "price": 9.99,
-    "releaseDate": "1992-07-15",
-    "description": "Test Description after PUT"
+{
+    "name": "Final Fanatazy XIV",
+    "genreId": "7cb4ee5a-827b-4b09-a000-0d4be033b5c9",
+    "price": 59.99,
+    "releaseDate": "2010-09-30",
+    "description": "Final Fantasy XIV[c] is a subscription-based massively multiplayer online role-playing game (MMORPG) developed and published by Square Enix. Directed and produced by Naoki Yoshida and released worldwide for PlayStation 3 and Windows in August 2013, it replaced the failed 2010 version, with subsequent support for PlayStation 4 in April 2014, macOS in July 2015, PlayStation 5 in May 2021, Xbox Series X/S in March 2024, and Nintendo Switch 2 in August 2026."
 }
 
 
 ### DELETE 
-DELETE http://localhost:5299/games/1ff97920-49f6-43fb-9005-6dccc51272bd
+DELETE http://localhost:5299/games/d1b04fa7-393b-4f34-bbad-2427b20b9046
 
 
 ### GET genres
