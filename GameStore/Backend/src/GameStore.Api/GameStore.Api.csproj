@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <Folder Include="Shared\" />
+    <Folder Include="Shared\ErrorHandling\" />
     <Folder Include="Shared\Timing\" />
   </ItemGroup>
 

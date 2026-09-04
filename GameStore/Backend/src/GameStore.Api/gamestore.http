@@ -1,5 +1,16 @@
 GET http://localhost:5299/games
 
+###
+GET http://localhost:5299/games?PageNumber=4&PageSize=2
+
+###
+GET http://localhost:5299/games?PageNumber=1&PageSize=10&Name=fI
+
+###
+GET http://localhost:5299/games?PageNumber=1&PageSize=10&Name=street
+
+###
+GET http://localhost:5299/games?PageNumber=1&PageSize=10&Name=1234
 
 ###
 GET http://localhost:5299/games/129e1ba7-d2a4-41cc-b1b7-6b7ab182df92
