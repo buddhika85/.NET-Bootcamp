@@ -1,4 +1,6 @@
-﻿using GameStore.Api.Data;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using GameStore.Api.Data;
 using GameStore.Api.Features.Games.Constants;
 using GameStore.Api.Shared.FileUpload;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -11,12 +13,23 @@ public static class UpdateGameEndpoint
     public static void MapUpdateGame(this IEndpointRouteBuilder app)
     {
         app.MapPut("/{id:guid}",
-                async Task<Results<NotFound<string>, BadRequest<ErrorResponseDto>, NoContent>>
+                async Task<Results<
+                UnauthorizedHttpResult,
+                NotFound<string>,
+                BadRequest<ErrorResponseDto>,
+                NoContent>>
                 ([FromRoute] Guid id,
                 [FromForm] UpdateGameDto updatedGame,
                 GameStoreContext dbContext,
-                FileUploader fileUploader) =>
+                FileUploader fileUploader,
+                ClaimsPrincipal user) =>
             {
+                var currentUserId = user?.FindFirstValue(JwtRegisteredClaimNames.Sub);
+                if (string.IsNullOrEmpty(currentUserId))
+                {
+                    return TypedResults.Unauthorized();
+                }
+
                 var existingGame = await dbContext.Games.FindAsync(id);
                 if (existingGame is null)
                     return TypedResults.NotFound($"Game with Id {id} not found");
@@ -43,6 +56,7 @@ public static class UpdateGameEndpoint
                 existingGame.Price = updatedGame.Price;
                 existingGame.ReleaseDate = updatedGame.ReleaseDate;
                 existingGame.Description = updatedGame.Description;
+                existingGame.LastUpdatedBy = currentUserId;
 
                 await dbContext.SaveChangesAsync();
 

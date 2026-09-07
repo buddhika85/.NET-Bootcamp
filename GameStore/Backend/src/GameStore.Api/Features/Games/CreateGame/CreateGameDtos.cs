@@ -24,7 +24,8 @@ public record GameDetailsDto(
     Guid GenreId,
     decimal Price,
     DateOnly ReleaseDate,
-    string ImageUri);
+    string ImageUri,
+    string LastUpdatedBy);
 
 
 public record ErrorResponseDto(

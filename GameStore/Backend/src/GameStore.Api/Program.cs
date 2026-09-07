@@ -34,7 +34,11 @@ builder.Services.AddHttpContextAccessor()
 // OPEN API SERVICES
 builder.Services.AddOpenApi();
 
-
+builder.Services.AddAuthentication()           // Auth related services    --> this adds UseAuthentication & UseAuthorisation middleware
+                .AddJwtBearer(options =>
+                {
+                    options.MapInboundClaims = false;
+                });
 
 var app = builder.Build();
 
