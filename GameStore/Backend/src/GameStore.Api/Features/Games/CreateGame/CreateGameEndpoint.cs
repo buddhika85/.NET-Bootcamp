@@ -1,3 +1,5 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using GameStore.Api.Data;
 using GameStore.Api.Features.Games.Constants;
 using GameStore.Api.Models;
@@ -14,12 +16,28 @@ public static class CreateGameEndpoint
     public static void MapCreateGame(this IEndpointRouteBuilder app)
     {
         app.MapPost("/",
-                async Task<Results<BadRequest<ErrorResponseDto>, CreatedAtRoute<GameDetailsDto>>> (
+                async Task<Results<
+                    UnauthorizedHttpResult,
+                    BadRequest<ErrorResponseDto>,
+                    CreatedAtRoute<GameDetailsDto>>> (
                     [FromForm] CreateGameDto game,                  // cannot use [FromBody] - JSON, as this contains Image file, must use [FromForm]
                     GameStoreContext dbContext,
                     FileUploader fileUploader,
-                    ILogger<Program> logger) =>
+                    ILogger<Program> logger,
+                    ClaimsPrincipal user) =>
             {
+                if (user?.Identity?.IsAuthenticated == false)
+                {
+                    return TypedResults.Unauthorized();
+                }
+
+                var currentUserId = user?.FindFirstValue(JwtRegisteredClaimNames.Sub);
+
+                if (string.IsNullOrEmpty(currentUserId))
+                {
+                    return TypedResults.Unauthorized();
+                }
+
                 var imageUri = DefaultImageUri;
                 if (game.ImageFile is not null)
                 {
@@ -40,7 +58,8 @@ public static class CreateGameEndpoint
                     Price = game.Price,
                     ReleaseDate = game.ReleaseDate,
                     Description = game.Description,
-                    ImageUri = imageUri!
+                    ImageUri = imageUri!,
+                    LastUpdatedBy = currentUserId
                 };
 
                 await dbContext.Games.AddAsync(gameEntity);
@@ -59,7 +78,8 @@ public static class CreateGameEndpoint
                         gameEntity.GenreId,
                         gameEntity.Price,
                         gameEntity.ReleaseDate,
-                        gameEntity.ImageUri),
+                        gameEntity.ImageUri,
+                        gameEntity.LastUpdatedBy),
                     routeName: EndpointNames.GetGameById,
                     routeValues: new { id = gameEntity.Id });
             })
