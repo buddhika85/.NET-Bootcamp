@@ -17,4 +17,12 @@ public record UpdateGameDto(
 
    [Required]
    [StringLength(500, MinimumLength = 5)]
-   string Description);
+   string Description)
+{
+   public IFormFile? ImageFile { get; set; }
+}
+
+
+public record ErrorResponseDto(
+    string Message
+);

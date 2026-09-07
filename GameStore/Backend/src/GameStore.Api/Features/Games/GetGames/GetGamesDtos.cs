@@ -7,11 +7,12 @@ public record GetGamesDto(
 
 public record GamesPageDto(
     int TotalPages,
-    IReadOnlyList<GameSummaryDto> Games);
+    IReadOnlyList<GameSummaryDto> Data);
 
 public record GameSummaryDto(
     Guid Id,
     string Name,
     string Genre,
     decimal Price,
-    DateOnly ReleaseDate);
+    DateOnly ReleaseDate,
+    string ImageUri);

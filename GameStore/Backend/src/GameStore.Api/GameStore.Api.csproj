@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.11" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.11">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
@@ -17,7 +18,9 @@
   <ItemGroup>
     <Folder Include="Shared\" />
     <Folder Include="Shared\ErrorHandling\" />
+    <Folder Include="Shared\FileUpload\" />
     <Folder Include="Shared\Timing\" />
+    <Folder Include="wwwroot\" />
   </ItemGroup>
 
 </Project>

@@ -4,4 +4,5 @@ export interface GameSummary {
     genre: string;
     price: number;
     releaseDate: string;
-  }
+    imageUri: string;
+}

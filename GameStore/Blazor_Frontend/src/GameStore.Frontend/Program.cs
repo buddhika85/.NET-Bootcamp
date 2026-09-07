@@ -5,6 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents();
+builder.Services.AddValidation();
 
 var backendApiUrl = builder.Configuration["BackendApiUrl"] ??
     throw new Exception("BackendApiUrl is not set");
@@ -14,8 +15,6 @@ builder.Services.AddHttpClient<GamesClient>(
 
 builder.Services.AddHttpClient<GenresClient>(
     client => client.BaseAddress = new Uri(backendApiUrl));
-
-builder.Services.AddValidation();
 
 var app = builder.Build();
 

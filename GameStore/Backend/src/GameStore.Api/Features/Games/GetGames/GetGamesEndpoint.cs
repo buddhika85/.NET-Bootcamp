@@ -41,7 +41,8 @@ public static class GetGamesEndpoint
                                         x.Name,
                                         x.Genre!.Name,
                                         x.Price,
-                                        x.ReleaseDate
+                                        x.ReleaseDate,
+                                        x.ImageUri
                                     ));
             var gamesOnPage = await paginatedQuery.ToListAsync();
 

@@ -1,4 +1,6 @@
 ﻿using GameStore.Api.Data;
+using GameStore.Api.Features.Games.Constants;
+using GameStore.Api.Shared.FileUpload;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,8 +11,11 @@ public static class UpdateGameEndpoint
     public static void MapUpdateGame(this IEndpointRouteBuilder app)
     {
         app.MapPut("/{id:guid}",
-                async Task<Results<NotFound<string>, BadRequest<string>, NoContent>>
-                ([FromRoute] Guid id, [FromBody] UpdateGameDto updatedGame, GameStoreContext dbContext) =>
+                async Task<Results<NotFound<string>, BadRequest<ErrorResponseDto>, NoContent>>
+                ([FromRoute] Guid id,
+                [FromForm] UpdateGameDto updatedGame,
+                GameStoreContext dbContext,
+                FileUploader fileUploader) =>
             {
                 var existingGame = await dbContext.Games.FindAsync(id);
                 if (existingGame is null)
@@ -18,7 +23,20 @@ public static class UpdateGameEndpoint
 
                 var genre = await dbContext.Genres.FindAsync(updatedGame.GenreId);
                 if (genre is null)
-                    return TypedResults.BadRequest($"Genre with Id {updatedGame.GenreId} not available");
+                    return TypedResults.BadRequest(new ErrorResponseDto(
+                        $"Genre with Id {updatedGame.GenreId} not available"));
+
+                if (updatedGame.ImageFile is not null)
+                {
+                    var fileUploadResult = await fileUploader.UploadFileAsync(
+                                                                updatedGame.ImageFile,
+                                                                StorageNames.GameImagesFolder);
+                    if (!fileUploadResult.IsSuccess)
+                    {
+                        return TypedResults.BadRequest(new ErrorResponseDto(fileUploadResult.ErrorMessage!));
+                    }
+                    existingGame.ImageUri = fileUploadResult.FileUrl!;
+                }
 
                 existingGame.Name = updatedGame.Name;
                 existingGame.GenreId = updatedGame.GenreId;
@@ -29,6 +47,7 @@ public static class UpdateGameEndpoint
                 await dbContext.SaveChangesAsync();
 
                 return TypedResults.NoContent();
-            });
+            })
+            .DisableAntiforgery();
     }
 }

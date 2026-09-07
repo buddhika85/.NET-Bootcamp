@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import GamesClient from '../../clients/GamesClient';
+import { GamesPage } from '../../models/GamesPage';
 import { GameSummary } from '../../models/GameSummary';
 import DeleteGameModal from '../../components/DeleteGameModal';
+import Pagination from '../../components/Pagination';
 
 // Declare bootstrap property on window object
 declare global {
@@ -11,17 +13,24 @@ declare global {
     }
 }
 
+const PAGE_SIZE = 5;
+
 const Catalog: React.FC = () => {
-    const [games, setGames] = useState<GameSummary[] | null>(null);
+    const [searchParams, setSearchParams] = useSearchParams();
+    const [gamesPage, setGamesPage] = useState<GamesPage | null>(null);
     const [loadingErrorList, setLoadingErrorList] = useState<string[]>([]);
     const [errorList, setErrorList] = useState<string[]>([]);
     const [gameToDelete, setGameToDelete] = useState<GameSummary | null>(null);
 
+    const currentPage = parseInt(searchParams.get('page') ?? '1', 10);
+    const nameFilter = searchParams.get('name') ?? undefined;
+
     const fetchGames = async () => {
+        setLoadingErrorList([]);
         try {
             const gamesClient = new GamesClient();
-            const data = await gamesClient.getGamesAsync();
-            setGames(data);
+            const data = await gamesClient.getGamesAsync(currentPage, PAGE_SIZE, nameFilter);
+            setGamesPage(data);
         } catch (error: unknown) {
             if (error instanceof Error) {
                 setLoadingErrorList([error.message]);
@@ -34,7 +43,7 @@ const Catalog: React.FC = () => {
     useEffect(() => {
         document.title = 'Game Catalog';
         fetchGames();
-    }, []);
+    }, [currentPage, nameFilter]);
 
     useEffect(() => {
         if (gameToDelete) {
@@ -67,17 +76,28 @@ const Catalog: React.FC = () => {
         }
     };
 
+    const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        const form = event.currentTarget;
+        const term = (form.elements.namedItem('nameSearch') as HTMLInputElement).value.trim();
+        const next = new URLSearchParams();
+        if (term) next.set('name', term);
+        setSearchParams(next);
+    };
+
     if (loadingErrorList.length > 0) {
-        return <div>
-            {loadingErrorList.map((error, index) => (
-                <div key={index} className="mt-3 text-danger">
-                    <em>{error}</em>
-                </div>
-            ))}
-        </div>;
+        return (
+            <div>
+                {loadingErrorList.map((error, index) => (
+                    <div key={index} className="mt-3 text-danger">
+                        <em>{error}</em>
+                    </div>
+                ))}
+            </div>
+        );
     }
 
-    if (games === null) {
+    if (gamesPage === null) {
         return <p className="mt-3"><em>Loading...</em></p>;
     }
 
@@ -88,6 +108,19 @@ const Catalog: React.FC = () => {
                     <Link className="btn btn-primary" to="/catalog/editgame" role="button">
                         New Game
                     </Link>
+                </div>
+                <div className="col-sm-4">
+                    <form className="d-flex" role="search" onSubmit={handleSearch}>
+                        <input
+                            name="nameSearch"
+                            className="form-control me-2"
+                            type="search"
+                            defaultValue={nameFilter ?? ''}
+                            placeholder="Search..."
+                            aria-label="Search"
+                        />
+                        <button className="btn btn-outline-primary" type="submit">Search</button>
+                    </form>
                 </div>
             </div>
 
@@ -104,6 +137,7 @@ const Catalog: React.FC = () => {
             <table className="table table-striped table-bordered table-hover mt-3">
                 <thead className="table-dark">
                     <tr>
+                        <th>Image</th>
                         <th>Name</th>
                         <th>Genre</th>
                         <th className="text-end">Price</th>
@@ -112,8 +146,11 @@ const Catalog: React.FC = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {games.map((game) => (
+                    {gamesPage.data.map((game) => (
                         <tr key={game.id}>
+                            <td style={{ width: '60px', maxWidth: '60px' }}>
+                                <img src={game.imageUri} alt={game.name} style={{ width: '50px', objectFit: 'contain' }} />
+                            </td>
                             <td>{game.name}</td>
                             <td>{game.genre}</td>
                             <td className="text-end">${game.price}</td>
@@ -132,6 +169,16 @@ const Catalog: React.FC = () => {
                     ))}
                 </tbody>
             </table>
+
+            <div className="row mt-2">
+                <div className="col">
+                    <Pagination
+                        currentPage={currentPage}
+                        totalPages={gamesPage.totalPages}
+                        nameSearch={nameFilter}
+                    />
+                </div>
+            </div>
 
             {/* Delete Confirmation Modal */}
             {gameToDelete && (
