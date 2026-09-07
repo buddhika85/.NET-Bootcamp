@@ -2,6 +2,7 @@ using GameStore.Api.Data;
 using GameStore.Api.Features.Games;
 using GameStore.Api.Features.Genres;
 using GameStore.Api.Shared.ErrorHandling;
+using GameStore.Api.Shared.FileUpload;
 using GameStore.Api.Shared.Timing;
 using Microsoft.AspNetCore.HttpLogging;
 
@@ -27,6 +28,13 @@ builder.Services.AddHttpLogging(options =>
     options.CombineLogs = true;
 });
 
+builder.Services.AddHttpContextAccessor()
+                .AddSingleton<FileUploader>();
+
+// OPEN API SERVICES
+builder.Services.AddOpenApi();
+
+
 
 var app = builder.Build();
 
@@ -36,12 +44,16 @@ var app = builder.Build();
 app.MapGames();
 app.MapGenres();
 
+// OPEN API ROUTE - /openapi/v1.json
+if (app.Environment.IsDevelopment())
+{
+    app.MapOpenApi();       // Register an endpoint onto the current application for resolving the OpenAPI document associated with the current application.
+}
+
 // MIDDLEWARE
 app.UseMiddleware<RequestTimingMiddleware>();
 app.UseHttpLogging();
 
-// RUN MIGRATIONS WHEN APP STARTS & SEED
-await app.InitializeDbAsync();
 
 // PRODUCTION RFC7007 - PROBLEM DETAIL Format
 if (!app.Environment.IsDevelopment())
@@ -50,4 +62,19 @@ if (!app.Environment.IsDevelopment())
 }
 app.UseStatusCodePages();
 
+
+app.UseStaticFiles();           // Serve Files from wwwroot folder
+
+// RUN MIGRATIONS WHEN APP STARTS & SEED
+await app.InitializeDbAsync();
+
+
+
+
+// TERMINAL MIDDLEWARE IN THE PIPELINE
 app.Run();
+
+
+// EXECUTE ENDPOINT SELECTED
+
+// GO BACK TO APP.RUN TERMINAL MIDDLEWARE, & GO BOTTOM TO TOP OF MIDDLEWARE PIPELINE

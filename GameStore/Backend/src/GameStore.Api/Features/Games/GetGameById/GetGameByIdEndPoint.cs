@@ -25,11 +25,14 @@ public static class GetGameByIdEndPoint
                                 game.GenreId,
                                 game.Price,
                                 game.ReleaseDate,
-                                game.Description
+                                game.Description,
+                                game.ImageUri
                             )
                         );
 
-        }).WithName(EndpointNames.GetGameById);
+        })
+        .WithName(EndpointNames.GetGameById)
+        .DisableAntiforgery();
     }
 
 }

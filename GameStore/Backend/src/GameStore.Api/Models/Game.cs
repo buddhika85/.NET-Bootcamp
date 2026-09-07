@@ -8,6 +8,8 @@ public class Game
     public DateOnly ReleaseDate { get; set; }
     public required string Description { get; set; }
 
+    public required string ImageUri { get; set; }
+
     // FK
     public Guid GenreId { get; set; }
     public Genre? Genre { get; set; }

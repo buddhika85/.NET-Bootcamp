@@ -29,6 +29,9 @@
     [Parameter]
     public GameSummary? Game { get; set; }
 
+    [SupplyParameterFromForm]
+    private int? GameIdToDelete { get; set; }    
+
     private string title = string.Empty;
 
     protected override void OnParametersSet()
