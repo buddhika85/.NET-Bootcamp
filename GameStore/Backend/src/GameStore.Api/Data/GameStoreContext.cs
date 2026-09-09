@@ -13,4 +13,7 @@ public class GameStoreContext
     // DbSet is an optimized collection for relational table representations - code is built in to convert DbSet linq queries pure SQL
     public DbSet<Genre> Genres => Set<Genre>();
     public DbSet<Game> Games => Set<Game>();
+
+    public DbSet<BasketItem> BasketItems => Set<BasketItem>();
+    public DbSet<CustomerBasket> Baskets => Set<CustomerBasket>();
 }

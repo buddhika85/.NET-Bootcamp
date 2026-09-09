@@ -3,6 +3,7 @@ using System.Security.Claims;
 using GameStore.Api.Data;
 using GameStore.Api.Features.Games.Constants;
 using GameStore.Api.Models;
+using GameStore.Api.Shared.Authorization;
 using GameStore.Api.Shared.FileUpload;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -83,6 +84,7 @@ public static class CreateGameEndpoint
                     routeName: EndpointNames.GetGameById,
                     routeValues: new { id = gameEntity.Id });
             })
-            .DisableAntiforgery();      // Since we use JWT, not cookies which are susseptable for CSRF attacks
+            .DisableAntiforgery()       // Since we use JWT, not cookies which are susseptable for CSRF attacks
+            .RequireAuthorization(Policies.AdminAccess);
     }
 }

@@ -1,4 +1,5 @@
 using GameStore.Api.Data;
+using GameStore.Api.Shared.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,6 +18,7 @@ public static class DeleteGameEndpoint
                     .ExecuteDeleteAsync();                   // Batch Delete directly in Physical DB
 
                 return TypedResults.NoContent();
-            });
+            })
+            .RequireAuthorization(Policies.AdminAccess);
     }
 }

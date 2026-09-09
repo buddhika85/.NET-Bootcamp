@@ -18,7 +18,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Features\Baskets\" />
+    <Folder Include="Features\Baskets\Authorization\" />
+    <Folder Include="Features\Baskets\GetBasket\" />
+    <Folder Include="Features\Baskets\UpsertBasket\" />
     <Folder Include="Shared\" />
+    <Folder Include="Shared\Authorization\" />
     <Folder Include="Shared\ErrorHandling\" />
     <Folder Include="Shared\FileUpload\" />
     <Folder Include="Shared\Timing\" />

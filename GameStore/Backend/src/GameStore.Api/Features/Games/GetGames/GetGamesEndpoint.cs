@@ -53,9 +53,7 @@ public static class GetGamesEndpoint
                     gamesOnPage
                     )
             );
-        }
-
-
-        );
+        })
+        .AllowAnonymous();
     }
 }
