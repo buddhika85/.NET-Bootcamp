@@ -33,7 +33,7 @@ public static class GetGameByIdEndPoint
 
         })
         .WithName(EndpointNames.GetGameById)
-        .DisableAntiforgery();
+        .AllowAnonymous();
     }
 
 }

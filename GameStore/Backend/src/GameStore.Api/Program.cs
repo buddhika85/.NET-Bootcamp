@@ -1,9 +1,14 @@
 using GameStore.Api.Data;
+using GameStore.Api.Features.Baskets;
+using GameStore.Api.Features.Baskets.Authorization;
 using GameStore.Api.Features.Games;
 using GameStore.Api.Features.Genres;
+using GameStore.Api.Shared.Authorization;
 using GameStore.Api.Shared.ErrorHandling;
 using GameStore.Api.Shared.FileUpload;
 using GameStore.Api.Shared.Timing;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption;
 using Microsoft.AspNetCore.HttpLogging;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -34,11 +39,17 @@ builder.Services.AddHttpContextAccessor()
 // OPEN API SERVICES
 builder.Services.AddOpenApi();
 
-builder.Services.AddAuthentication()           // Auth related services    --> this adds UseAuthentication & UseAuthorisation middleware
+// AUTHEN
+builder.Services.AddAuthentication()           // Authentication - middlware and services added
                 .AddJwtBearer(options =>
                 {
                     options.MapInboundClaims = false;
+                    options.TokenValidationParameters.RoleClaimType = "role";
                 });
+
+// AUTHOR
+builder.AddGameStoreAuthorization();    // Authorization - middlware and services added, policies defined in the extension method
+builder.Services.AddSingleton<IAuthorizationHandler, BasketAuthorizationHandler>();
 
 var app = builder.Build();
 
@@ -47,6 +58,7 @@ var app = builder.Build();
 // ROUTES
 app.MapGames();
 app.MapGenres();
+app.MapBaskets();
 
 // OPEN API ROUTE - /openapi/v1.json
 if (app.Environment.IsDevelopment())
@@ -68,6 +80,8 @@ app.UseStatusCodePages();
 
 
 app.UseStaticFiles();           // Serve Files from wwwroot folder
+
+app.UseAuthorization();
 
 // RUN MIGRATIONS WHEN APP STARTS & SEED
 await app.InitializeDbAsync();

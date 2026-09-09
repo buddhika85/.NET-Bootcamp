@@ -14,6 +14,7 @@ public static class GetGenresEndpoint
                     .AsNoTracking()
                     .Select(x => new GenreDto(x.Id, x.Name))
                     .ToListAsync()
-            ));
+            ))
+            .AllowAnonymous();
     }
 }
