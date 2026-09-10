@@ -5,5 +5,6 @@ export interface GameDetails {
     price: number;
     releaseDate: string;
     description: string;
+    imageFile?: File | null;
     imageUri?: string | null;
 }

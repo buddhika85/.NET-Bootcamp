@@ -1,4 +1,4 @@
-import { Genre } from '../models/Genre';
+import type { Genre } from '../models/Genre';
 
 class GenresClient {
   private baseUrl = '';

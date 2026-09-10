@@ -1,6 +1,5 @@
 using GameStore.Api.Data;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace GameStore.Api.Features.Games.GetGames;

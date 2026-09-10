@@ -1,9 +1,15 @@
-import { CommandResult } from '../models/CommandResult';
-import { GameDetails } from '../models/GameDetails';
-import { GamesPage } from '../models/GamesPage';
+import type { CommandResult } from '../models/CommandResult';
+import type { GameDetails } from '../models/GameDetails';
+import type { GamesPage } from '../models/GamesPage';
+import type { GameSummary } from '../models/GameSummary';
 
 class GamesClient {
   private baseUrl = '';
+  private accessToken: string | null;
+
+  constructor(accessToken: string | null = null) {
+    this.accessToken = accessToken;
+  }  
 
   async getGamesAsync(pageNumber: number, pageSize: number, nameSearch?: string): Promise<GamesPage> {
     const params = new URLSearchParams({
@@ -20,21 +26,28 @@ class GamesClient {
       throw new Error(errorMessages.join('\n'));
     }
 
-    const page: GamesPage = await response.json();
+    const data = await response.json();
 
-    page.data = page.data.map((game) => {
+    // Transform releaseDate strings to Date objects and format as MM/dd/yyyy
+    const transformedData = data.data.map((game: GameSummary) => {
       const date = new Date(game.releaseDate);
       const formattedDate = `${String(date.getUTCMonth() + 1).padStart(2, '0')}/${String(date.getUTCDate()).padStart(2, '0')}/${date.getUTCFullYear()}`;
-      return { ...game, releaseDate: formattedDate };
+      return {
+        ...game,
+        releaseDate: formattedDate,
+      };
     });
 
-    return page;
+    return {
+      ...data,
+      data: transformedData,
+    };
   }
 
-  async addGameAsync(game: GameDetails, imageFile?: File): Promise<CommandResult> {
+  async addGameAsync(game: GameDetails): Promise<CommandResult> {
     const response = await this.fetchWithHandling(`${this.baseUrl}/games`, {
       method: 'POST',
-      body: this.toFormData(game, imageFile),
+      body: this.toMultiPartFormDataContent(game),
     });
 
     if (!response.ok) {
@@ -56,10 +69,10 @@ class GamesClient {
     return await response.json();
   }
 
-  async updateGameAsync(updatedGame: GameDetails, imageFile?: File): Promise<CommandResult> {
+  async updateGameAsync(updatedGame: GameDetails): Promise<CommandResult> {
     const response = await this.fetchWithHandling(`${this.baseUrl}/games/${updatedGame.id}`, {
       method: 'PUT',
-      body: this.toFormData(updatedGame, imageFile),
+      body: this.toMultiPartFormDataContent(updatedGame),
     });
 
     if (!response.ok) {
@@ -83,22 +96,33 @@ class GamesClient {
     return { succeeded: true, errors: [] };
   }
 
-  private toFormData(game: GameDetails, imageFile?: File): FormData {
+  private toMultiPartFormDataContent(game: GameDetails): FormData {
     const formData = new FormData();
     formData.append('Name', game.name);
     formData.append('GenreId', game.genreId ?? '');
+    formData.append('Description', game.description);
     formData.append('Price', game.price.toString());
     formData.append('ReleaseDate', game.releaseDate);
-    formData.append('Description', game.description);
-    if (imageFile) {
-      formData.append('ImageFile', imageFile, imageFile.name);
+    if (game.imageFile) {
+      formData.append('ImageFile', game.imageFile);
     }
     return formData;
   }
 
   private async fetchWithHandling(url: string, options?: RequestInit): Promise<Response> {
+    const headers = new Headers(options?.headers || {});
+
+    if (this.accessToken) {
+      headers.append('Authorization', `Bearer ${this.accessToken}`);
+    }
+
+    const updatedOptions: RequestInit = {
+      ...options,
+      headers,
+    };
+
     try {
-      const response = await fetch(url, options);
+      const response = await fetch(url, updatedOptions);
       return response;
     } catch (error) {
       if (error instanceof TypeError) {

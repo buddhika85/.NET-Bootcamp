@@ -5,4 +5,5 @@ export interface GameSummary {
     price: number;
     releaseDate: string;
     imageUri: string;
-}
+    lastUpdatedBy: string;
+  }

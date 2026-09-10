@@ -8,7 +8,6 @@ using GameStore.Api.Shared.ErrorHandling;
 using GameStore.Api.Shared.FileUpload;
 using GameStore.Api.Shared.Timing;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption;
 using Microsoft.AspNetCore.HttpLogging;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -40,12 +39,7 @@ builder.Services.AddHttpContextAccessor()
 builder.Services.AddOpenApi();
 
 // AUTHEN
-builder.Services.AddAuthentication()           // Authentication - middlware and services added
-                .AddJwtBearer(options =>
-                {
-                    options.MapInboundClaims = false;
-                    options.TokenValidationParameters.RoleClaimType = "role";
-                });
+builder.AddGameStoreAuthentication();
 
 // AUTHOR
 builder.AddGameStoreAuthorization();    // Authorization - middlware and services added, policies defined in the extension method

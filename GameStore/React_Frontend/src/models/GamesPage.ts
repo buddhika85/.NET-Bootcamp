@@ -1,6 +1,6 @@
-import { GameSummary } from './GameSummary';
+import type { GameSummary } from './GameSummary';
 
 export interface GamesPage {
-    totalPages: number;
-    data: GameSummary[];
+  totalPages: number;
+  data: GameSummary[];
 }
