@@ -1,7 +1,16 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
+import { useAuth } from 'react-oidc-context';
+import LoginDisplay from './LoginDisplay';
+import CartDisplay from './CartDisplay';
 
 const NavMenu: React.FC = () => {
+  const auth = useAuth();
+
+  const role = auth.user?.profile?.role;
+  const roles = Array.isArray(role) ? role : role ? [role as string] : [];
+  const isAdmin = roles.includes('Admin');
+
   return (
     <nav className="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
       <div className="container">
@@ -13,14 +22,22 @@ const NavMenu: React.FC = () => {
         </button>
         <div className="collapse navbar-collapse" id="navbarSupportedContent">
           <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-            <li className="nav-item">
-              <NavLink
-                className={({ isActive }) => "nav-link" + (isActive ? " active" : "")}
-                to="/catalog">
-                Catalog
-              </NavLink>
-            </li>
+            {auth.isAuthenticated && isAdmin && (
+              <li className="nav-item">
+                <NavLink
+                  className={({ isActive }) => "nav-link" + (isActive ? " active" : "")}
+                  to="/catalog">
+                  Catalog
+                </NavLink>
+              </li>
+            )}
           </ul>
+          <div className="d-flex align-items-center">
+            <div className="me-3 d-flex">
+              <LoginDisplay />
+            </div>
+            <CartDisplay />
+          </div>
         </div>
       </div>
     </nav>

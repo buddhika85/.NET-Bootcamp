@@ -25,7 +25,9 @@ public static class UpdateGameEndpoint
                 FileUploader fileUploader,
                 ClaimsPrincipal user) =>
             {
-                var currentUserId = user?.FindFirstValue(JwtRegisteredClaimNames.Sub);
+                var currentUserId = user?.FindFirstValue(JwtRegisteredClaimNames.Email)             // email or
+                                        ?? user?.FindFirstValue(JwtRegisteredClaimNames.Sub);       // user Id guid
+
                 if (string.IsNullOrEmpty(currentUserId))
                 {
                     return TypedResults.Unauthorized();

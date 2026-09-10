@@ -1,8 +1,10 @@
 using System.Security.Claims;
 using GameStore.Api.Data;
+using GameStore.Api.Features.Baskets.Authorization;
 using GameStore.Api.Models;
 using GameStore.Api.Shared.Authorization;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,7 +15,9 @@ public static class UpsertBasketEndpoint
     // PUT /baskets/user-id-guid
     public static void MapUpsertBastket(this IEndpointRouteBuilder app)
     {
-        app.MapPut("/{userId:guid}", async
+        app.MapPut("/{userId:guid}",
+            async
+            Task<Results<ForbidHttpResult, NoContent>>
 
             ([FromRoute] Guid userId,
             [FromBody] UpsertBasketDto basket,
@@ -52,7 +56,7 @@ public static class UpsertBasketEndpoint
             // only basket owner or Admin can upsert basket  
             var authResult = await authorizationService.AuthorizeAsync(
                 user,
-                userBasket,
+                usersBasket,
                 new OwnerOrAdminRequirement()
                 );
 

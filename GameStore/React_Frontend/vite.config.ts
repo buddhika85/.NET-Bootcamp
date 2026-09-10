@@ -12,6 +12,7 @@ export default defineConfig(({ mode }) => {
       proxy: {
         '/games': backendUrl,
         '/genres': backendUrl,
+        '/baskets': backendUrl,
       },
     },
   }

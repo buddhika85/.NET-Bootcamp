@@ -1,5 +1,5 @@
 import React from 'react';
-import { GameSummary } from '../models/GameSummary';
+import type { GameSummary } from '../models/GameSummary';
 
 interface DeleteGameModalProps {
   game: GameSummary;

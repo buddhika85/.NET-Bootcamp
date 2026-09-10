@@ -1,11 +1,10 @@
 ﻿@page "/catalog/editgame"
 @page "/catalog/editgame/{id:guid}"
-@using GameStore.Frontend.Models
+@attribute [Authorize]
 
 @inject NavigationManager NavigationManager
 @inject GamesClient GamesClient
 @inject GenresClient GenresClient
-@inject IJSRuntime JSRuntime
 
 <PageTitle>@title</PageTitle>
 <h3>@title</h3>

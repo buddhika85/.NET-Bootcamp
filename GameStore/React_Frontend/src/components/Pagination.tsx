@@ -1,48 +1,46 @@
+// src/components/Pagination.tsx
 import React from 'react';
-import { useLocation } from 'react-router-dom';
+import type { PaginationInfo } from '../models/PaginationInfo';
 
 interface PaginationProps {
-    currentPage: number;
-    totalPages: number;
-    nameSearch?: string;
+  paginationInfo: PaginationInfo;
+  onPageChange: (pageNumber: number) => void;
 }
 
-const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, nameSearch }) => {
-    const location = useLocation();
+const Pagination: React.FC<PaginationProps> = ({ paginationInfo, onPageChange }) => {
+  const getPageNumbers = (paginationInfo: PaginationInfo) => {
+    const pageNumbers = [];
+    for (let i = 1; i <= paginationInfo.totalPages; i++) {
+      pageNumbers.push(i);
+    }
+    return pageNumbers;
+  };
 
-    const buildUrl = (page: number): string => {
-        const params = new URLSearchParams();
-        if (page > 1) {
-            params.set('page', page.toString());
-        }
-        if (nameSearch) {
-            params.set('name', nameSearch);
-        }
-        const query = params.toString();
-        return `${location.pathname}${query ? `?${query}` : ''}`;
-    };
+  return (
+    <nav>
+      <ul className="pagination justify-content-center">
+        <li className={`page-item ${!paginationInfo.hasPrevious ? 'disabled' : ''}`}>
+          <button className="page-link" onClick={() => onPageChange(paginationInfo.currentPage - 1)} disabled={!paginationInfo.hasPrevious}>
+            Previous
+          </button>
+        </li>
 
-    const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
+        {getPageNumbers(paginationInfo).map((pageNumber) => (
+          <li key={pageNumber} className={`page-item ${pageNumber === paginationInfo.currentPage ? 'active' : ''}`}>
+            <button className="page-link" onClick={() => onPageChange(pageNumber)}>
+              {pageNumber}
+            </button>
+          </li>
+        ))}
 
-    return (
-        <nav>
-            <ul className="pagination justify-content-center">
-                <li className={`page-item ${currentPage <= 1 ? 'disabled' : ''}`}>
-                    <a className="page-link" href={buildUrl(currentPage - 1)}>Previous</a>
-                </li>
-
-                {pageNumbers.map((page) => (
-                    <li key={page} className={`page-item ${page === currentPage ? 'active' : ''}`}>
-                        <a className="page-link" href={buildUrl(page)}>{page}</a>
-                    </li>
-                ))}
-
-                <li className={`page-item ${currentPage >= totalPages ? 'disabled' : ''}`}>
-                    <a className="page-link" href={buildUrl(currentPage + 1)}>Next</a>
-                </li>
-            </ul>
-        </nav>
-    );
+        <li className={`page-item ${!paginationInfo.hasNext ? 'disabled' : ''}`}>
+          <button className="page-link" onClick={() => onPageChange(paginationInfo.currentPage + 1)} disabled={!paginationInfo.hasNext}>
+            Next
+          </button>
+        </li>
+      </ul>
+    </nav>
+  );
 };
 
 export default Pagination;
