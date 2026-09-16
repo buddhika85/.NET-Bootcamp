@@ -33,7 +33,7 @@ public static class CreateGameEndpoint
                 }
 
                 var currentUserId = user?.FindFirstValue(JwtRegisteredClaimNames.Email)             // email or
-                                        ?? user?.FindFirstValue(JwtRegisteredClaimNames.Sub);       // user Id guid
+                                        ?? user?.FindFirstValue(GameStoreClaimTypes.UserId);       // user Id guid
 
                 if (string.IsNullOrEmpty(currentUserId))
                 {

@@ -186,7 +186,8 @@ DocProject/Help/Html2
 DocProject/Help/html
 
 # Click-Once directory
-publish/
+**/publish/
+**/published/
 
 # Publish Web Output
 *.[Pp]ublish.xml
@@ -195,6 +196,9 @@ publish/
 # but database connection strings (with potential passwords) will be unencrypted
 *.pubxml
 *.publishproj
+
+**/bin/
+**/obj/
 
 # Microsoft Azure Web App publish settings. Comment the next line if you want to
 # checkin your Azure Web App publish settings, but sensitive information contained
@@ -492,3 +496,9 @@ $RECYCLE.BIN/
 
 # Claude Code local (personal) settings
 **/.claude/settings.local.json
+
+
+# Untrack .vscode sensitive files
+**/.vscode/settings.json
+
+**/secrets-do-not-commit.txt

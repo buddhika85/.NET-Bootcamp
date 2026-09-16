@@ -4,7 +4,9 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+
     <UserSecretsId>06de75d3-c060-49de-9e81-c4bef638b95d</UserSecretsId>
+    
   </PropertyGroup>
 
   <ItemGroup>
@@ -28,6 +30,10 @@
     <Folder Include="Shared\FileUpload\" />
     <Folder Include="Shared\Timing\" />
     <Folder Include="wwwroot\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="wwwroot/**" />
   </ItemGroup>
 
 </Project>
