@@ -4,6 +4,7 @@ using GameStore.Api.Data;
 using GameStore.Api.Features.Games.Constants;
 using GameStore.Api.Models;
 using GameStore.Api.Shared.Authorization;
+using GameStore.Api.Shared.Cdn;
 using GameStore.Api.Shared.FileUpload;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -25,7 +26,8 @@ public static class CreateGameEndpoint
                     GameStoreContext dbContext,
                     FileUploader fileUploader,
                     ILogger<Program> logger,
-                    ClaimsPrincipal user) =>
+                    ClaimsPrincipal user,
+                    CdnUrlTransformer cdnUrlTransformer) =>
             {
                 if (user?.Identity?.IsAuthenticated == false)
                 {
@@ -80,7 +82,8 @@ public static class CreateGameEndpoint
                         gameEntity.GenreId,
                         gameEntity.Price,
                         gameEntity.ReleaseDate,
-                        gameEntity.ImageUri,
+                        cdnUrlTransformer
+                            .TransformToCdnUrl(gameEntity.ImageUri),
                         gameEntity.LastUpdatedBy),
                     routeName: EndpointNames.GetGameById,
                     routeValues: new { id = gameEntity.Id });
