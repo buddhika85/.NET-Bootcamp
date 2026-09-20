@@ -1,5 +1,6 @@
 using GameStore.Api.Data;
 using GameStore.Api.Features.Games.Constants;
+using GameStore.Api.Shared.Cdn;
 using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace GameStore.Api.Features.Games.GetGameById;
@@ -12,7 +13,8 @@ public static class GetGameByIdEndPoint
         app.MapGet("/{id:guid}", async
             Task<Results<NotFound, Ok<GameDetailsDto>, ProblemHttpResult>> (
                 Guid id,
-                GameStoreContext dbContext) =>
+                GameStoreContext dbContext,
+                CdnUrlTransformer cdnUrlTransformer) =>
         {
 
             var game = await dbContext.Games.FindAsync(id); ;
@@ -26,7 +28,8 @@ public static class GetGameByIdEndPoint
                                 game.Price,
                                 game.ReleaseDate,
                                 game.Description,
-                                game.ImageUri,
+                                cdnUrlTransformer
+                                    .TransformToCdnUrl(game.ImageUri),
                                 game.LastUpdatedBy
                             )
                         );

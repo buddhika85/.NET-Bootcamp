@@ -4,6 +4,7 @@ using GameStore.Api.Features.Baskets.Authorization;
 using GameStore.Api.Features.Games;
 using GameStore.Api.Features.Genres;
 using GameStore.Api.Shared.Authorization;
+using GameStore.Api.Shared.Cdn;
 using GameStore.Api.Shared.ErrorHandling;
 using GameStore.Api.Shared.FileUpload;
 using GameStore.Api.Shared.Timing;
@@ -44,6 +45,9 @@ builder.AddGameStoreAuthentication();
 // AUTHOR
 builder.AddGameStoreAuthorization();    // Authorization - middlware and services added, policies defined in the extension method
 builder.Services.AddSingleton<IAuthorizationHandler, BasketAuthorizationHandler>();
+
+// 
+builder.Services.AddSingleton<CdnUrlTransformer>();
 
 var app = builder.Build();
 

@@ -1,4 +1,5 @@
 using GameStore.Api.Data;
+using GameStore.Api.Shared.Cdn;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,7 +13,8 @@ public static class GetGamesEndpoint
         app.MapGet("/",
             async Task<Ok<GamesPageDto>> (
             [AsParameters] GetGamesDto request,
-            GameStoreContext dbContext
+            GameStoreContext dbContext,
+            CdnUrlTransformer cdnUrlTransformer
             ) =>
         {
             // build with where clause if name provided
@@ -41,7 +43,8 @@ public static class GetGamesEndpoint
                                         x.Genre!.Name,
                                         x.Price,
                                         x.ReleaseDate,
-                                        x.ImageUri,
+                                        cdnUrlTransformer
+                                                .TransformToCdnUrl(x.ImageUri),
                                         x.LastUpdatedBy
                                     ));
             var gamesOnPage = await paginatedQuery.ToListAsync();
