@@ -1,16 +1,16 @@
+using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
+
 namespace GameStore.Api.Shared.FileUpload;
 
-public class FileUploader(
-    IWebHostEnvironment environment,
-    IHttpContextAccessor httpContextAccessor)
+public class FileUploader(BlobServiceClient blobServiceClient)
 {
     public const int MaxFileSize = 10 * 1024 * 1024;        // 10 MB
     public readonly string[] PermittedFileNames = [".jpg", ".jped", ".png"];
 
-
     public async Task<FileUploadResult> UploadFileAsync(
         IFormFile file,
-        string folder)
+        string folder)      // folder === azure blob container name
     {
         var uploadResult = new FileUploadResult();
 
@@ -39,25 +39,25 @@ public class FileUploader(
         }
 
         // create folder
-        var uploadFolder = Path.Combine(environment.WebRootPath, folder);
-        if (!Directory.Exists(uploadFolder))
-        {
-            Directory.CreateDirectory(uploadFolder);
-        }
+        var containerClient = blobServiceClient.GetBlobContainerClient(folder);
+        await containerClient.CreateIfNotExistsAsync(PublicAccessType.Blob);
 
-        // file name on server - no conflicts with other files
+        // file name on blob container - no conflicts with other files
         var safeFileName = $"{Guid.NewGuid()}{fileExtension}";
-        var fullPath = Path.Combine(uploadFolder, safeFileName);
+        var blobClient = containerClient.GetBlobClient(safeFileName);
+        await blobClient.DeleteIfExistsAsync();
 
-        // stream copy
-        using var stream = new FileStream(fullPath, FileMode.Create);           // destination to stream copy
-        await file.CopyToAsync(stream);
+        // upload file as a stream to azure blob
+        using var fileStream = file.OpenReadStream();
+        await blobClient.UploadAsync(
+            fileStream,
+            new BlobHttpHeaders { ContentType = file.ContentType }
+            );
 
-        // uploaded file URL on server
-        var httpContext = httpContextAccessor.HttpContext;
-        uploadResult.FileUrl = $"{httpContext?.Request.Scheme}://{httpContext?.Request.Host}/{folder}/{safeFileName}";
 
+        // file upload to azure blob is complete 
         uploadResult.IsSuccess = true;
+        uploadResult.FileUrl = blobClient.Uri.ToString();
         return uploadResult;
     }
 }

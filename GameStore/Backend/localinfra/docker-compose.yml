@@ -20,5 +20,16 @@ services:
       - keycloak-data:/opt/keycloak/data
     command: ["start-dev"]
 
+  # docker run -p 10000:10000 -p 10001:10001 -p 10002:10002 \
+  #     mcr.microsoft.com/azure-storage/azurite
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite:3.37.0
+    container_name: azurite
+    ports:
+      - "10000:10000"
+    volumes:
+      - azurite-data:/data
+
 volumes:
   keycloak-data:
+  azurite-data:

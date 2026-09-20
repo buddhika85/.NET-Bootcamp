@@ -32,8 +32,8 @@ builder.Services.AddHttpLogging(options =>
     options.CombineLogs = true;
 });
 
-builder.Services.AddHttpContextAccessor()
-                .AddSingleton<FileUploader>();
+// FILE UOLOADER TO AZURE BLOB
+builder.AddFileUploader();
 
 // OPEN API SERVICES
 builder.Services.AddOpenApi();
@@ -73,7 +73,7 @@ if (!app.Environment.IsDevelopment())
 app.UseStatusCodePages();
 
 
-app.UseStaticFiles();           // Serve Files from wwwroot folder
+// app.UseStaticFiles();           // Serve Files from wwwroot folder - no need - now we use Azure Blobs not files inside wwwroot
 
 app.UseAuthorization();
 
