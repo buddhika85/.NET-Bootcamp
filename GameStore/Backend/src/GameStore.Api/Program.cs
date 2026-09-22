@@ -10,6 +10,7 @@ using GameStore.Api.Shared.FileUpload;
 using GameStore.Api.Shared.Timing;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.HttpLogging;
+using Microsoft.Extensions.Azure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,8 +47,11 @@ builder.AddGameStoreAuthentication();
 builder.AddGameStoreAuthorization();    // Authorization - middlware and services added, policies defined in the extension method
 builder.Services.AddSingleton<IAuthorizationHandler, BasketAuthorizationHandler>();
 
-// 
+// AZURE FRONT DOOR CDN URLs 
 builder.Services.AddSingleton<CdnUrlTransformer>();
+
+// AZURE SERVICES LOGGING
+builder.Services.AddSingleton<AzureEventSourceLogForwarder>();
 
 var app = builder.Build();
 
@@ -72,6 +76,10 @@ app.UseHttpLogging();
 // PRODUCTION RFC7007 - PROBLEM DETAIL Format
 if (!app.Environment.IsDevelopment())
 {
+    // AZURE SERVICES LOGGING
+    app.Services.GetRequiredService<AzureEventSourceLogForwarder>().Start();
+
+
     app.UseExceptionHandler();
 }
 app.UseStatusCodePages();
