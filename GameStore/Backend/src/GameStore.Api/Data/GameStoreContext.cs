@@ -1,3 +1,4 @@
+using GameStore.Api.Data.Configurations;
 using GameStore.Api.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,4 +17,13 @@ public class GameStoreContext
 
     public DbSet<BasketItem> BasketItems => Set<BasketItem>();
     public DbSet<CustomerBasket> Baskets => Set<CustomerBasket>();
+
+    // When EF model created this method will be created
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        modelBuilder.ApplyConfigurationsFromAssembly(
+            typeof(GameEntityConfiguration).Assembly);
+    }
 }

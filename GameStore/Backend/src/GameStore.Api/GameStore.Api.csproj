@@ -14,15 +14,22 @@
     <PackageReference Include="Azure.Storage.Blobs" Version="12.29.2" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.11" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.11" />
+    
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.11">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.11">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    
     <PackageReference Include="Microsoft.Extensions.Azure" Version="1.14.1" />
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Data\Configurations\" />
     <Folder Include="Features\Baskets\" />
     <Folder Include="Features\Baskets\Authorization\" />
     <Folder Include="Features\Baskets\GetBasket\" />

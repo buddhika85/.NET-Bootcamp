@@ -12,6 +12,19 @@ public static class DataExtensions
         app.Logger.LogInformation(18, "-------> DB Ready: Migrations completed and DB seeded");
     }
 
+    // registering DB Context, using SQL Server connetion string in Dev and Managed Identity in Azure
+    public static WebApplicationBuilder AddGameStoreMsSQL<TContext>(
+        this WebApplicationBuilder builder,
+        string connectionStringName
+        ) where TContext : DbContext
+    {
+        var connectionString = builder.Configuration.GetConnectionString(connectionStringName)
+            ?? throw new InvalidOperationException($"Connection string '{connectionStringName}' is missing.");
+        builder.Services.AddSqlServer<TContext>(connectionString);
+
+        return builder;
+    }
+
     // Runs migrations when application starts - without doing it using CLI - dotnet ef database update
     private static async Task MigrateDbAsync(this WebApplication app)
     {
