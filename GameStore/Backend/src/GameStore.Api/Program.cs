@@ -1,3 +1,4 @@
+using Azure.Identity;
 using GameStore.Api.Data;
 using GameStore.Api.Features.Baskets;
 using GameStore.Api.Features.Baskets.Authorization;
@@ -14,13 +15,18 @@ using Microsoft.Extensions.Azure;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// DEFAULT CREDENTIAL
+var defaultCredential = new DefaultAzureCredential(new DefaultAzureCredentialOptions
+{
+    ManagedIdentityClientId = builder.Configuration["AZURE_CLIENT_ID"]             // User assigned managed identity
+});
+
 // PROBLEM DETAILS for ERRORS
 builder.Services.AddProblemDetails()
                 .AddExceptionHandler<GlobalExceptionHandler>();     // GLOBAL EXCEPTION HANDLER
 
 // EF CORE - SCOPED lifetime DB CONTEXT
-var connString = builder.Configuration.GetConnectionString("GameStore");
-builder.Services.AddSqlite<GameStoreContext>(connString);
+builder.AddGameStoreMsSQL<GameStoreContext>("GameStoreDB");
 
 builder.Services.AddValidation(); // replaces WithParameterValidation() in all endpoints - now obsolete
 
@@ -34,8 +40,8 @@ builder.Services.AddHttpLogging(options =>
     options.CombineLogs = true;
 });
 
-// FILE UOLOADER TO AZURE BLOB
-builder.AddFileUploader();
+// FILE UPLOADER TO AZURE BLOB
+builder.AddFileUploader(defaultCredential);
 
 // OPEN API SERVICES
 builder.Services.AddOpenApi();

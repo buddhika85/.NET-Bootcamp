@@ -5,7 +5,7 @@
 # start-dev
 
 # docker compose up -d
-# docker compose down -d
+# docker compose down
 
 services:
   keycloak:
@@ -26,10 +26,27 @@ services:
     image: mcr.microsoft.com/azure-storage/azurite:3.37.0
     container_name: azurite
     ports:
-      - "10000:10000"
+      - "10000:10000" # blob
+      - "10001:10001" # queue
+      - "10002:10002" # table
     volumes:
       - azurite-data:/data
+
+  # docker pull mcr.microsoft.com/mssql/server:2022-latest
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "Local!Dev123"
+      MSSQL_PID: "Developer"
+    ports:
+      - "14330:1433" # hosts 14330 mapped --> containers 1433 port
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+    restart: unless-stopped
 
 volumes:
   keycloak-data:
   azurite-data:
+  sqlserver-data:
