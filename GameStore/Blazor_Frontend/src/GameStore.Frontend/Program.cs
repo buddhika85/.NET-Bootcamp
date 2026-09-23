@@ -1,4 +1,4 @@
-using GameStore.Frontend.Authorization;
+﻿using GameStore.Frontend.Authorization;
 using GameStore.Frontend.Clients;
 using GameStore.Frontend.Components;
 using GameStore.Frontend.Services;
@@ -32,7 +32,10 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
+
+    builder.AddGameStoreKeyVault();
 }
 
 app.MapStaticAssets();

@@ -1,1 +1,5 @@
-{}
+{
+  "appService.deploySubpath": "published",
+  "appService.preDeployTask": "publish",
+  "appService.defaultWebAppToDeploy": "/subscriptions/1e4464b8-43cf-4b3b-83dd-ae1e62152a86/resourceGroups/rg-gamestore-dev-auseast/providers/Microsoft.Web/sites/app-gamestore-fe-dev-auseast-01"
+}

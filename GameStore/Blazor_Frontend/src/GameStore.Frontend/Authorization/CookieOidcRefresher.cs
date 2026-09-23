@@ -4,6 +4,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
@@ -87,7 +88,20 @@ internal sealed class CookieOidcRefresher(IOptionsMonitor<OpenIdConnectOptions> 
         });
 
         validateContext.ShouldRenew = true;
-        validateContext.ReplacePrincipal(new ClaimsPrincipal(validationResult.ClaimsIdentity));
+
+        var newIdentity = validationResult.ClaimsIdentity;
+        var services = validateContext.HttpContext.RequestServices;
+
+        if (oidcScheme == Schemes.Entra)
+        {
+            services.GetRequiredService<EntraClaimsTransformer>().Transform(newIdentity);
+        }
+        else if (oidcScheme == Schemes.Keycloak)
+        {
+            services.GetRequiredService<KeycloakClaimsTransformer>().Transform(newIdentity);
+        }
+
+        validateContext.ReplacePrincipal(new ClaimsPrincipal(newIdentity));
 
         var expiresIn = int.Parse(message.ExpiresIn, NumberStyles.Integer, CultureInfo.InvariantCulture);
         var expiresAt = now + TimeSpan.FromSeconds(expiresIn);
