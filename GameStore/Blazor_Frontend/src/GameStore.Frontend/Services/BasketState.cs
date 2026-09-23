@@ -1,4 +1,4 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+﻿using GameStore.Frontend.Authorization;
 using GameStore.Frontend.Clients;
 using GameStore.Frontend.Models;
 using Microsoft.AspNetCore.Components;
@@ -108,6 +108,6 @@ public class BasketState(
     {
         var authenticationState = await authenticationStateProvider.GetAuthenticationStateAsync();
 
-        return authenticationState?.User?.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
+        return authenticationState?.User?.FindFirst(GameStoreClaimTypes.UserId)?.Value;
     }
 }

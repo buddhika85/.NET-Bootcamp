@@ -1,6 +1,8 @@
 ﻿@page "/cart"
 @using GameStore.Frontend.Authorization
 @using System.IdentityModel.Tokens.Jwt
+@using GameStore.Frontend.Clients
+@using GameStore.Frontend.Models
 @using GameStore.Frontend.Services
 @inject BasketState BasketState
 @inject NavigationManager NavigationManager
@@ -165,6 +167,6 @@
     {
         var authenticationState = await authenticationStateProvider.GetAuthenticationStateAsync();
 
-        return authenticationState?.User?.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
+        return authenticationState?.User?.FindFirst(GameStoreClaimTypes.UserId)?.Value;
     }    
 }

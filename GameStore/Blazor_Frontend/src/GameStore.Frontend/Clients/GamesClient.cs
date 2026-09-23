@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Headers;
+﻿using System.Globalization;
+using System.Net.Http.Headers;
 using GameStore.Frontend.Models;
 
 namespace GameStore.Frontend.Clients;
@@ -50,11 +51,11 @@ public class GamesClient(HttpClient httpClient)
         {
             { new StringContent(game.Name), nameof(game.Name) },
             { new StringContent(game.GenreId.ToString()!), nameof(game.GenreId) },
-            { new StringContent(game.Price.ToString()), nameof(game.Price) },
-            { new StringContent(game.ReleaseDate.ToString()), nameof(game.ReleaseDate) },
+            { new StringContent(game.Price.ToString(CultureInfo.InvariantCulture)), nameof(game.Price) },
+            { new StringContent(game.ReleaseDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)), nameof(game.ReleaseDate) },
             { new StringContent(game.Description), nameof(game.Description) }
         };
-    
+
         if (game.ImageFile is not null)
         {
             var streamContent = new StreamContent(game.ImageFile.OpenReadStream())
@@ -64,7 +65,7 @@ public class GamesClient(HttpClient httpClient)
 
             formData.Add(streamContent, "ImageFile", game.ImageFile.FileName);
         }
-        
+
         return formData;
     }
 }
