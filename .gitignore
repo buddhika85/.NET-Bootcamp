@@ -502,3 +502,7 @@ $RECYCLE.BIN/
 **/.vscode/settings.json
 
 **/secrets-do-not-commit.txt
+
+
+# Hey Load Testing
+/hey_load_testing/**

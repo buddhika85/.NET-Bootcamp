@@ -2,16 +2,19 @@ using Azure.Identity;
 using GameStore.Api.Data;
 using GameStore.Api.Features.Baskets;
 using GameStore.Api.Features.Baskets.Authorization;
+using GameStore.Api.Features.Diagnostics;
 using GameStore.Api.Features.Games;
 using GameStore.Api.Features.Genres;
 using GameStore.Api.Shared.Authorization;
 using GameStore.Api.Shared.Cdn;
 using GameStore.Api.Shared.ErrorHandling;
 using GameStore.Api.Shared.FileUpload;
+using GameStore.Api.Shared.Health;
 using GameStore.Api.Shared.Timing;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.Extensions.Azure;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -59,6 +62,11 @@ builder.Services.AddSingleton<CdnUrlTransformer>();
 // AZURE SERVICES LOGGING
 builder.Services.AddSingleton<AzureEventSourceLogForwarder>();
 
+// HEALTH CHECKS
+// CHECKING APP CAN TALK TO DATABASE via GameStoreContext
+// CHECKING IF AZURE BLOB STORAGE IS RESPONDING
+builder.AddGameStoreHealthChecks();
+
 var app = builder.Build();
 
 
@@ -67,6 +75,8 @@ var app = builder.Build();
 app.MapGames();
 app.MapGenres();
 app.MapBaskets();
+app.MapDiagnostics();
+app.MapGameStoreHealthChecks();
 
 // OPEN API ROUTE - /openapi/v1.json
 if (app.Environment.IsDevelopment())

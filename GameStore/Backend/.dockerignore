@@ -1,0 +1,7 @@
+**/.vscode
+**/localinfra
+**/bin
+**/obj
+**/Properties
+**/appsettings.Development.json
+**/*.sln
