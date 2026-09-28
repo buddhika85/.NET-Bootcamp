@@ -7,9 +7,12 @@
 
     <UserSecretsId>06de75d3-c060-49de-9e81-c4bef638b95d</UserSecretsId>
     <StaticWebAssetsEnabled>false</StaticWebAssetsEnabled>
+
+    <!-- <ContainerRuntimeIdentifier>linux-musl-x64</ContainerRuntimeIdentifier> -->  <!--linux-musl is not compatible with Local SQL Client - breaks-->
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AspNetCore.HealthChecks.Azure.Storage.Blobs" Version="9.0.0" />
     <PackageReference Include="Azure.Identity" Version="1.21.0" />
     <PackageReference Include="Azure.Storage.Blobs" Version="12.29.2" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.11" />
@@ -26,6 +29,8 @@
     </PackageReference>
     
     <PackageReference Include="Microsoft.Extensions.Azure" Version="1.14.1" />
+    
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="10.0.12" />
   </ItemGroup>
 
   <ItemGroup>
@@ -34,11 +39,14 @@
     <Folder Include="Features\Baskets\Authorization\" />
     <Folder Include="Features\Baskets\GetBasket\" />
     <Folder Include="Features\Baskets\UpsertBasket\" />
+    <Folder Include="Features\Diagnostics\" />
+    <Folder Include="Features\Diagnostics\GetNodeInfo\" />
     <Folder Include="Shared\" />
     <Folder Include="Shared\Authorization\" />
     <Folder Include="Shared\Cdn\" />
     <Folder Include="Shared\ErrorHandling\" />
     <Folder Include="Shared\FileUpload\" />
+    <Folder Include="Shared\Health\" />
     <Folder Include="Shared\Timing\" />
   </ItemGroup>
 

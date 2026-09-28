@@ -9,7 +9,7 @@ public static class DataExtensions
         await app.MigrateDbAsync();
         await app.SeedDbAsync();
 
-        app.Logger.LogInformation(18, "-------> DB Ready: Migrations completed and DB seeded");
+        app.Logger.LogInformation(18, "-------> DB Ready: Migrations completed and Gamestore DB seeded !");
     }
 
     // registering DB Context, using SQL Server connetion string in Dev and Managed Identity in Azure

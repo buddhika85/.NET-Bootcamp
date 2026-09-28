@@ -4,7 +4,17 @@
 # quay.io/keycloak/keycloak:26.6.1
 # start-dev
 
+# ---docker image build
+# docker build -t gamestore-api:1.0 .           --> command to run from Backend Dir to create Docker image
+
+# ---using NET SDK for docker and building images - from '\GameStore\Backend\src\GameStore.Api' folder
+#  dotnet publish --os linux --arch x64 /t:PublishContainer -p ContainerImageTag=1.3 -v detailed              --> generates docker image in the local machine without docker commands
+#  dotnet publish /t:PublishContainer -p ContainerFamily=noble-chiseled-extra -p ContainerImageTag=1.4 -v detailed         --> creating smaller image using noble-chiseled-extra of Linux
+
 # docker compose up -d
+# docker compose ps                         --> should list all containers including gamestore-api also
+# docker logs -f gamestore-api      --> to check if there were any DB migration or any errors in the logs while starting up - gamestore-api
+
 # docker compose down
 
 services:
@@ -45,6 +55,29 @@ services:
     volumes:
       - sqlserver-data:/var/opt/mssql
     restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          '/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "Local!Dev123" -C -Q "SELECT 1" -b -o /dev/null',
+        ]
+      interval: 10s # retry interval
+      timeout: 5s # if starting is not responding for 5 seconds retry
+      retries: 10 # try starting sql server container for 10 times before failing
+      start_period: 30s # give sql server container time to come up
+
+  gamestoreapi:
+    image: gamestore-api:1.4
+    container_name: gamestore-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__GameStoreDB: "Server=sqlserver,1433;Database=GameStore;User Id=sa;Password=Local!Dev123;TrustServerCertificate=True;Encrypt=False"
+      ConnectionStrings__Blobs: "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;"
+    ports:
+      - "5100:8080" # local host 5100 request forwarded to port 8080 of gamestore-api container
+    depends_on: # making gamestoreapi wait until the sql server container come up - because gamestore api cannot run without sql server containers gamestore DB
+      sqlserver:
+        condition: service_healthy
 
 volumes:
   keycloak-data:
